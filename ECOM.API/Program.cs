@@ -1,5 +1,6 @@
 
 using ECOM.INFRASTRUCTURE;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ECOM.API
 {
@@ -16,6 +17,7 @@ namespace ECOM.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.InfrastructureConfiguration(builder.Configuration);
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             var app = builder.Build();
 

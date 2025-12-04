@@ -14,4 +14,11 @@ namespace ECOM.CORE.Entites.Product
         [ForeignKey(name: nameof(ProductId))]
         public virtual Product Product { get; set; }
     }
+
+    public record PhotoDTO
+    {
+        public string ImageName { get; set; }
+
+        public int ProductId { get; set; }
+    }
 }

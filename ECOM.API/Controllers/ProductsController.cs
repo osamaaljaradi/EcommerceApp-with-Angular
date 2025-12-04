@@ -14,7 +14,7 @@ namespace ECOM.API.Controllers
         {
         }
 
-        [HttpGet("get_all")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> get()
         {
             try
@@ -32,7 +32,7 @@ namespace ECOM.API.Controllers
             }
         }
 
-        [HttpGet("get_by_id/{id}")]
+        [HttpGet("get-by-id/{id}")]
         public async Task<IActionResult> getById(int id)
         {
             try
@@ -48,7 +48,7 @@ namespace ECOM.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost("Add_Product")]
+        [HttpPost("Add-Product")]
         public async Task<IActionResult> add(AddProductDTO productDTO)
         {
             try
@@ -62,7 +62,7 @@ namespace ECOM.API.Controllers
                 return BadRequest(new ResponseAPI(400, ex.Message));
             }
         }
-        [HttpPut("Update_Product")]
+        [HttpPut("Update-Product")]
         public async Task<IActionResult> update(UpdateProductDTO updateProductDTO)
         {
             try
@@ -75,7 +75,7 @@ namespace ECOM.API.Controllers
                 return BadRequest(new ResponseAPI(400,ex.Message));
             }
         }
-        [HttpDelete("Delete_Product/{Id}")]
+        [HttpDelete("Delete-Product/{Id}")]
         public async Task<IActionResult> delete(int Id)
         {
             try

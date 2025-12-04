@@ -34,7 +34,7 @@ namespace ECOM.API.Controllers
 
         }
 
-        [HttpGet("get_by_id")]
+        [HttpGet("get-by-id")]
         public async Task<IActionResult> getById(int id) 
         {
             try
@@ -49,7 +49,7 @@ namespace ECOM.API.Controllers
             }
         }
 
-        [HttpPost("add_category")]
+        [HttpPost("add-category")]
         public async Task<IActionResult> add(CategoryDTO categoryDTO)
         {
             try
@@ -64,7 +64,7 @@ namespace ECOM.API.Controllers
             }
         }
 
-        [HttpPut("update_category")]
+        [HttpPut("update-category")]
         public async Task<IActionResult> update(UpdateCategoryDTO categoryDTO)
         {
             try
@@ -79,7 +79,7 @@ namespace ECOM.API.Controllers
             }
         }
 
-        [HttpDelete("delete_category/{id}")]
+        [HttpDelete("delete-category/{id}")]
         public async Task<IActionResult> delete(int id)
         {
             try

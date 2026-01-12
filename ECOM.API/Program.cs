@@ -11,6 +11,14 @@ namespace ECOM.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(op=>
+            {
+                op.AddPolicy("CORSPolicy", builder =>
+                {
+                    builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200");
+                });
+            });
+
             // Add services to the container.
             builder.Services.AddMemoryCache();
             builder.Services.AddControllers();
@@ -28,11 +36,14 @@ namespace ECOM.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors("CORSPolicy");
             app.UseMiddleware<ExceptionsMiddleware>();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseStaticFiles();
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
             app.UseHttpsRedirection();
-
-            app.UseAuthorization();
+            
 
 
             app.MapControllers();

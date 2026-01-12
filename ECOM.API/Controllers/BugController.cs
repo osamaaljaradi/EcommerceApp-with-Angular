@@ -11,10 +11,10 @@ namespace ECOM.API.Controllers
         {
         }
 
-        [HttpGet("not-found")]
-        public async Task<IActionResult> GetNotFound()
-        {
-            var cate
-        }
+        //[HttpGet("not-found")]
+        //public async Task<IActionResult> GetNotFound()
+        //{
+            
+        //}
     }
 }

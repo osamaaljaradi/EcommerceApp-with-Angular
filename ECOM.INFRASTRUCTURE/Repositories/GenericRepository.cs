@@ -69,5 +69,8 @@ namespace ECOM.INFRASTRUCTURE.Repositries
             _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> CountAsync()
+        => await _context.Set<T>().CountAsync();
     }
 }

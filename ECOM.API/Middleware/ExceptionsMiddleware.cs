@@ -32,18 +32,52 @@ namespace ECOM.API.Middleware
                         APIExceptions((int)HttpStatusCode.TooManyRequests, "Too Many Request. Please Try Again Later");
                     await context.Response.WriteAsJsonAsync(response);
                 }
-                _next(context);
+                await _next(context);
             }
             catch (Exception ex)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/json";
-                var response = _environment.IsDevelopment() ?
-                    new APIExceptions((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace)
-                    : new APIExceptions((int)HttpStatusCode.InternalServerError, ex.Message);
-                var json =JsonSerializer.Serialize(response);
+
+                string GetInnerMessages(Exception e)
+                {
+                    var msgs = new List<string>();
+                    var cur = e;
+                    while (cur != null)
+                    {
+                        msgs.Add(cur.Message);
+                        cur = cur.InnerException;
+                    }
+                    return string.Join(" --> ", msgs);
+                }
+
+                var isDev = _environment.IsDevelopment();
+                var sqlNumber = (ex.InnerException as Microsoft.Data.SqlClient.SqlException)?.Number;
+
+                var response = new
+                {
+                    StatusCode = context.Response.StatusCode,
+                    Message = isDev ? ex.Message : "Server error",
+                    InnerException = isDev ? ex.InnerException?.ToString() : null,
+                    InnerMessages = isDev ? GetInnerMessages(ex) : null,
+                    SqlErrorNumber = isDev ? sqlNumber : null,
+                    Details = isDev ? ex.StackTrace : null
+                };
+
+                var json = JsonSerializer.Serialize(response);
                 await context.Response.WriteAsync(json);
             }
+
+            //catch (Exception ex)
+            //{
+            //    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            //    context.Response.ContentType = "application/json";
+            //    var response = _environment.IsDevelopment() ?
+            //        new APIExceptions((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace)
+            //        : new APIExceptions((int)HttpStatusCode.InternalServerError, ex.Message);
+            //    var json =JsonSerializer.Serialize(response);
+            //    await context.Response.WriteAsync(json);
+            //}
         }
 
         private bool IsRequestAllowed(HttpContext context) 

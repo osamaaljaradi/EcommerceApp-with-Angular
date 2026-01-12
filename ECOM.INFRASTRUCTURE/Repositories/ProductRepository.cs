@@ -3,9 +3,11 @@ using ECOM.CORE.DTO;
 using ECOM.CORE.Entites.Product;
 using ECOM.CORE.Interfaces;
 using ECOM.CORE.Services;
+using ECOM.CORE.Sharing;
 using ECOM.INFRASTRUCTURE.Data;
 using ECOM.INFRASTRUCTURE.Repositries;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,59 @@ namespace ECOM.INFRASTRUCTURE.Repositories
             this.context = context;
             this.mapper = mapper;
             this.imageManagementService = imageManagementService;
+        }
+
+        public async Task<ReturnProductDTO> GetAllAsync(ProductParams productParams)
+        {
+            var query = context.Products
+                .Include(m=>m.Category)
+                .Include(m=>m.Photos)
+                .AsNoTracking();
+            //filtering by Word
+            if (!string.IsNullOrEmpty(productParams.Search))
+            {
+                var searchWords = productParams.Search
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Select(w => w.ToLower())
+        .ToArray();
+
+                foreach (var word in searchWords)
+                {
+                    var w = word; // مهم للـ closure
+                    query = query.Where(m =>
+                        m.Name.ToLower().Contains(w) ||
+                        m.Description.ToLower().Contains(w)
+                    );
+                }
+            }
+
+            //fillering by category Id
+            if (productParams.CategoryId.HasValue)
+            {
+                query = query.Where(m => m.CategoryId == productParams.CategoryId);
+            }
+            if(!string.IsNullOrEmpty(productParams.Sort))
+            {
+                switch (productParams.Sort)
+                {
+                    case "PriceAce":
+                        query = query.OrderBy(m => m.NewPrice);
+                        break;
+                    case "PriceDce":
+                        query = query.OrderByDescending(m => m.NewPrice);
+                        break;
+                    default:
+                        query = query.OrderBy(m => m.Name);
+                        break;
+                }
+            }
+
+            ReturnProductDTO returnProductDTO = new ReturnProductDTO();
+            returnProductDTO.TotalCount = query.Count();
+            query = query.Skip((productParams.pageSize) * (productParams.PageNumber - 1)).Take(productParams.pageSize);
+
+            returnProductDTO.products = mapper.Map<List<ProductDTO>>(query);
+            return returnProductDTO;
         }
 
         public async Task<bool> AddAsync(AddProductDTO productDTO)
